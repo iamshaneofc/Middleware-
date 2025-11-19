@@ -1,21 +1,19 @@
 {
     'name': 'Disc.com Purchase Notifier',
-    'version': '1.0',
+    'version': '16.0.1.0.0',
     'category': 'Sales',
-    'summary': 'Middleware to notify users on disc.com after purchase',
+    'summary': 'Notifies users on disc.com after Odoo purchase',
     'description': """
-        This module automatically:
-        - Monitors sale orders in Odoo
-        - Registers users on disc.com when payment is confirmed
-        - Sends notification emails with login credentials
+        Monitors Odoo sales; registers users on disc.com; sends notification emails.
     """,
-    'author': 'Your Name',
-    'depends': ['sale', 'sale_management'],
+    'author': 'Your Company Name',
+    'license': 'LGPL-3',
+    'depends': ['base', 'sale', 'sale_management', 'mail'],
     'data': [
         'security/ir.model.access.csv',
         'views/disc_config_views.xml',
     ],
     'installable': True,
-    'application': False,
+    'application': True,
     'auto_install': False,
 }
