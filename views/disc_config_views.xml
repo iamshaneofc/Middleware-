@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Purchase Log Tree View -->
+    <record id="view_disc_purchase_log_tree" model="ir.ui.view">
+        <field name="name">disc.purchase.log.tree</field>
+        <field name="model">disc.purchase.log</field>
+        <field name="arch" type="xml">
+            <tree string="Disc Purchase Logs">
+                <field name="name"/>
+                <field name="customer_name"/>
+                <field name="customer_email"/>
+                <field name="assessment_name"/>
+                <field name="purchase_date"/>
+                <field name="payment_status"/>
+                <field name="disc_registration_status"/>
+                <field name="email_sent"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Purchase Log Form View -->
+    <record id="view_disc_purchase_log_form" model="ir.ui.view">
+        <field name="name">disc.purchase.log.form</field>
+        <field name="model">disc.purchase.log</field>
+        <field name="arch" type="xml">
+            <form string="Disc Purchase Log">
+                <header>
+                    <button name="send_to_disc_com" string="Resend to Disc.com" 
+                            type="object" class="oe_highlight"
+                            attrs="{'invisible': [('disc_registration_status', '=', 'sent')]}"/>
+                    <button name="send_notification_email" string="Resend Email" 
+                            type="object"/>
+                    <field name="disc_registration_status" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group name="order_info" string="Order Information">
+                            <field name="name"/>
+                            <field name="sale_order_id"/>
+                            <field name="purchase_date"/>
+                            <field name="amount_total"/>
+                            <field name="currency_id"/>
+                            <field name="payment_status"/>
+                        </group>
+                        <group name="customer_info" string="Customer Information">
+                            <field name="customer_id"/>
+                            <field name="customer_name"/>
+                            <field name="customer_email"/>
+                            <field name="customer_phone"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group name="assessment_info" string="Assessment Details">
+                            <field name="assessment_name"/>
+                            <field name="assessment_product_id"/>
+                        </group>
+                        <group name="disc_info" string="Disc.com Integration">
+                            <field name="disc_user_id"/>
+                            <field name="email_sent"/>
+                            <field name="email_sent_date"/>
+                        </group>
+                    </group>
+                    <group name="api_response" string="API Response">
+                        <field name="disc_response" widget="text"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Purchase Log Action -->
+    <record id="action_disc_purchase_log" model="ir.actions.act_window">
+        <field name="name">Disc Purchase Logs</field>
+        <field name="res_model">disc.purchase.log</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Menu Items -->
+    <menuitem id="menu_disc_purchase_root" 
+              name="Disc Integration" 
+              sequence="100"/>
+    
+    <menuitem id="menu_disc_purchase_logs" 
+              name="Purchase Logs" 
+              parent="menu_disc_purchase_root" 
+              action="action_disc_purchase_log" 
+              sequence="10"/>
+
+    <!-- Configuration Menu -->
+    <menuitem id="menu_disc_config" 
+              name="Configuration" 
+              parent="menu_disc_purchase_root" 
+              sequence="99"/>
+
+    <!-- Email Template -->
+    <record id="email_template_disc_registration" model="mail.template">
+        <field name="name">Disc.com Registration Notification</field>
+        <field name="model_id" ref="model_disc_purchase_log"/>
+        <field name="subject">Your Assessment Access - Order ${object.name}</field>
+        <field name="email_from">${object.customer_email or ''}</field>
+        <field name="email_to">${object.customer_email}</field>
+        <field name="body_html" type="html">
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2>Thank you for your purchase!</h2>
+                <p>Dear ${object.customer_name},</p>
+                <p>Your payment has been confirmed for order <strong>${object.name}</strong>.</p>
+                
+                <h3>Assessment Details:</h3>
+                <ul>
+                    <li><strong>Assessment:</strong> ${object.assessment_name}</li>
+                    <li><strong>Purchase Date:</strong> ${object.purchase_date}</li>
+                    <li><strong>Amount:</strong> ${object.amount_total} ${object.currency_id.name}</li>
+                </ul>
+                
+                <h3>Access Your Assessment:</h3>
+                <p>Your account has been registered on our assessment platform.</p>
+                <p><strong>Email:</strong> ${object.customer_email}</p>
+                <p><strong>Assessment Link:</strong> <a href="https://disc.com/assessment">https://disc.com/assessment</a></p>
+                
+                <p>You will receive a separate email with your login credentials shortly.</p>
+                
+                <p>If you have any questions, please don't hesitate to contact us.</p>
+                
+                <p>Best regards,<br/>Your Team</p>
+            </div>
+        </field>
+    </record>
+
+    <!-- Sale Order Form View Inheritance -->
+    <record id="view_order_form_disc_inherit" model="ir.ui.view">
+        <field name="name">sale.order.form.disc.inherit</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Disc Integration">
+                    <field name="disc_purchase_log_ids">
+                        <tree>
+                            <field name="name"/>
+                            <field name="purchase_date"/>
+                            <field name="disc_registration_status"/>
+                            <field name="email_sent"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

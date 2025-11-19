@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_disc_purchase_log_user,disc.purchase.log user,model_disc_purchase_log,base.group_user,1,0,0,0
+access_disc_purchase_log_manager,disc.purchase.log manager,model_disc_purchase_log,sales_team.group_sale_manager,1,1,1,1
